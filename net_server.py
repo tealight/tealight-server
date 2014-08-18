@@ -28,7 +28,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     for client in clients[self.app]:
       if client != self or obj.get("echo"):
-        client.write_message(json.dumps(obj.data))
+        client.write_message(json.dumps(obj.get("data")))
 
   def on_close(self):
   	clients[self.app].remove(self)
