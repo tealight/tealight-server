@@ -25,14 +25,17 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     print "%s (%s) says: %s" % (self.app, self.request.remote_ip, message)
 
     obj = json.loads(message)
+
     for client in clients[self.app]:
-        client.write_message(message)
+      if client != self or obj.echo:
+        client.write_message(json.dumps(obj.data))
 
   def on_close(self):
   	clients[self.app].remove(self)
 
 app = tornado.web.Application([(r'/(.*)', WebSocketHandler)])
+port = int(os.environ.get("PORT", 9090))
 
-app.listen(int(os.environ.get("PORT", 9090)))
+app.listen(port)
 
 tornado.ioloop.IOLoop.instance().start()
